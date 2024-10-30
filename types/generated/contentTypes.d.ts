@@ -1,5 +1,44 @@
 import type { Struct, Schema } from '@strapi/strapi';
 
+export interface ApiWorkExperienceWorkExperience
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'work_experiences';
+  info: {
+    singularName: 'work-experience';
+    pluralName: 'work-experiences';
+    displayName: 'workExperience';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    companyName: Schema.Attribute.String & Schema.Attribute.Required;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+    startDate: Schema.Attribute.Date;
+    endDate: Schema.Attribute.Date;
+    location: Schema.Attribute.String;
+    description: Schema.Attribute.Blocks;
+    employmentType: Schema.Attribute.Enumeration<
+      ['Internship', 'Part Time', 'Full Time']
+    >;
+    companyLogo: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    techStack: Schema.Attribute.Component<'tech-stack.tech-stack', true>;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::work-experience.work-experience'
+    >;
+  };
+}
+
 export interface PluginUploadFile extends Struct.CollectionTypeSchema {
   collectionName: 'files';
   info: {
@@ -850,6 +889,7 @@ export interface AdminTransferTokenPermission
 declare module '@strapi/strapi' {
   export module Public {
     export interface ContentTypeSchemas {
+      'api::work-experience.work-experience': ApiWorkExperienceWorkExperience;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::i18n.locale': PluginI18NLocale;
