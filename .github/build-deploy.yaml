@@ -1,0 +1,48 @@
+name: Build and deploy container app to Azure Web App - property-guru-backend
+
+on:
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Azure
+        uses: azure/login@v2
+        with:
+          creds: '{"clientId":"${{ secrets.AZURE_CLIENT_ID }}","clientSecret":"${{ secrets.AZURE_CLIENT_SECRET }}","subscriptionId":"${{ secrets.AZURE_SUBSCRIPTION_ID }}","tenantId":"${{ secrets.AZURE_TENANT_ID }}"}'
+
+      - name: Login to Azure Container Registry
+        run: |
+          az acr login --name ${{ secrets.AZURE_ACR_NAME }}
+
+      - name: Build and push container image to registry
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.AZURE_WEBAPP_NAME }}:${{ github.ref_name }}
+          file: ./Dockerfile.prod
+
+      - name: Deploy to Azure Web App
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{ secrets.AZURE_WEBAPP_NAME }}
+          images: ${{ secrets.AZURE_ACR_NAME }}.azurecr.io/${{ secrets.AZURE_WEBAPP_NAME }}:${{ github.ref_name }}
+    
+    # Send WhatsApp notification (using Twilio API)
+      - name: Send WhatsApp notification
+        run: |
+          curl -X POST https://api.twilio.com/2010-04-01/Accounts/${{ secrets.TWILIO_ACCOUNT_SID }}/Messages.json \
+          --data-urlencode "Body=The deployment to Azure Web App has completed successfully." \
+          --data-urlencode "From=whatsapp:${{ secrets.TWILIO_WHATSAPP_FROM }}" \
+          --data-urlencode "To=whatsapp:${{ secrets.WHATSAPP_TO }}" \
+          -u "${{ secrets.TWILIO_ACCOUNT_SID }}:${{ secrets.TWILIO_AUTH_TOKEN }}"
