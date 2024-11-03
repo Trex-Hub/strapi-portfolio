@@ -49,9 +49,9 @@
       ]
     },
     "techStack": {
-      "type": "component",
-      "repeatable": true,
-      "component": "tech-stack.tech-stack"
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::tech-stack.tech-stack"
     }
   }
 }

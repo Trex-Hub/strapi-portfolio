@@ -1,44 +1,5 @@
 import type { Struct, Schema } from '@strapi/strapi';
 
-export interface ApiWorkExperienceWorkExperience
-  extends Struct.CollectionTypeSchema {
-  collectionName: 'work_experiences';
-  info: {
-    singularName: 'work-experience';
-    pluralName: 'work-experiences';
-    displayName: 'workExperience';
-    description: '';
-  };
-  options: {
-    draftAndPublish: true;
-  };
-  attributes: {
-    companyName: Schema.Attribute.String & Schema.Attribute.Required;
-    role: Schema.Attribute.String & Schema.Attribute.Required;
-    startDate: Schema.Attribute.Date;
-    endDate: Schema.Attribute.Date;
-    location: Schema.Attribute.String;
-    description: Schema.Attribute.Blocks;
-    employmentType: Schema.Attribute.Enumeration<
-      ['Internship', 'Part Time', 'Full Time']
-    >;
-    companyLogo: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
-    techStack: Schema.Attribute.Component<'tech-stack.tech-stack', true>;
-    createdAt: Schema.Attribute.DateTime;
-    updatedAt: Schema.Attribute.DateTime;
-    publishedAt: Schema.Attribute.DateTime;
-    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
-      Schema.Attribute.Private;
-    locale: Schema.Attribute.String;
-    localizations: Schema.Attribute.Relation<
-      'oneToMany',
-      'api::work-experience.work-experience'
-    >;
-  };
-}
-
 export interface PluginUploadFile extends Struct.CollectionTypeSchema {
   collectionName: 'files';
   info: {
@@ -524,6 +485,79 @@ export interface PluginUsersPermissionsUser
   };
 }
 
+export interface ApiTechStackTechStack extends Struct.CollectionTypeSchema {
+  collectionName: 'tech_stacks';
+  info: {
+    singularName: 'tech-stack';
+    pluralName: 'tech-stacks';
+    displayName: 'techStack';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    name: Schema.Attribute.String;
+    logo: Schema.Attribute.Media<'images'>;
+    category: Schema.Attribute.Enumeration<
+      ['Frontend', 'Backend', 'Database', 'DevOps', 'QA']
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tech-stack.tech-stack'
+    >;
+  };
+}
+
+export interface ApiWorkExperienceWorkExperience
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'work_experiences';
+  info: {
+    singularName: 'work-experience';
+    pluralName: 'work-experiences';
+    displayName: 'workExperience';
+    description: '';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    companyName: Schema.Attribute.String & Schema.Attribute.Required;
+    role: Schema.Attribute.String & Schema.Attribute.Required;
+    startDate: Schema.Attribute.Date;
+    endDate: Schema.Attribute.Date;
+    location: Schema.Attribute.String;
+    description: Schema.Attribute.Blocks;
+    employmentType: Schema.Attribute.Enumeration<
+      ['Internship', 'Part Time', 'Full Time']
+    >;
+    companyLogo: Schema.Attribute.Media<'images'> & Schema.Attribute.Required;
+    techStack: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::tech-stack.tech-stack'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    publishedAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::work-experience.work-experience'
+    >;
+  };
+}
+
 export interface AdminPermission extends Struct.CollectionTypeSchema {
   collectionName: 'admin_permissions';
   info: {
@@ -889,7 +923,6 @@ export interface AdminTransferTokenPermission
 declare module '@strapi/strapi' {
   export module Public {
     export interface ContentTypeSchemas {
-      'api::work-experience.work-experience': ApiWorkExperienceWorkExperience;
       'plugin::upload.file': PluginUploadFile;
       'plugin::upload.folder': PluginUploadFolder;
       'plugin::i18n.locale': PluginI18NLocale;
@@ -900,6 +933,8 @@ declare module '@strapi/strapi' {
       'plugin::users-permissions.permission': PluginUsersPermissionsPermission;
       'plugin::users-permissions.role': PluginUsersPermissionsRole;
       'plugin::users-permissions.user': PluginUsersPermissionsUser;
+      'api::tech-stack.tech-stack': ApiTechStackTechStack;
+      'api::work-experience.work-experience': ApiWorkExperienceWorkExperience;
       'admin::permission': AdminPermission;
       'admin::user': AdminUser;
       'admin::role': AdminRole;
